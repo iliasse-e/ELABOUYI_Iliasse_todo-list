@@ -1,26 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
+import { sortTodos } from "../service/sort";
 import { initData } from "./init-data";
 import { Todo } from "./todo";
 
-export interface TodoType {
+export interface TaskType {
   title: string;
   description: string;
   isDone: boolean;
 }
 
 export const TodoList = (): JSX.Element => {
-  const [tasks, setTasks] = useState<TodoType[]>(initData);
+  const [tasks, setTasks] = useState<TaskType[]>(initData);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [NewTaskDescription, setNewTaskDescription] = useState("");
+  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  const handleState = (title: string) => {
+    const hasCurrentTitle = (element: TaskType) => element.title === title;
+    const taskIndex: number = tasks.findIndex(hasCurrentTitle);
+    const currentTask: TaskType = tasks[taskIndex];
+    currentTask.isDone = !currentTask.isDone;
+    setTasks(sortTodos(tasks, currentTask));
+    forceUpdate();
+  };
 
   const newTask = (newTitle: string, newDescription: string) => {
     setTasks([
-      ...tasks,
       {
         title: newTitle,
         description: newDescription,
         isDone: false,
       },
+      ...tasks,
     ]);
   };
 
@@ -35,6 +46,7 @@ export const TodoList = (): JSX.Element => {
               titleContent={task.title}
               descriptionContent={task.description}
               isDoneState={task.isDone}
+              action={handleState}
             />
           );
         })}
@@ -52,13 +64,18 @@ export const TodoList = (): JSX.Element => {
           <input
             type="text"
             required
-            onChange={(e) => setNewTaskTitle(e.target.value)}
+            onChange={(e) => {
+              setNewTaskTitle(e.target.value);
+              e.preventDefault;
+            }}
           />
           Description :
           <input
-            value={""}
             type="text"
-            onChange={(e) => setNewTaskDescription(e.target.value)}
+            onChange={(e) => {
+              e.preventDefault;
+              setNewTaskDescription(e.target.value);
+            }}
           />
           <input type="submit" />
         </form>

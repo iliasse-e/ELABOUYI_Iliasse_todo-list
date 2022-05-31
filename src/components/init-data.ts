@@ -1,6 +1,6 @@
-import { TodoType } from "./todo-list";
+import { TaskType } from "./todo-list";
 
-export const initData: TodoType[] = [
+export const initData: TaskType[] = [
   {
     title: "mathematics",
     description: "",
