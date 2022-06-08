@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { sortTodos } from "../service/sort";
-import { initData } from "./init-data";
+import { initData } from "../data/init-data";
 import { Todo } from "./todo";
 
 export interface TaskType {
@@ -15,7 +15,9 @@ export const TodoList = (): JSX.Element => {
   const [NewTaskDescription, setNewTaskDescription] = useState("");
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  const handleState = (title: string) => {
+  console.log(tasks);
+
+  const toggleState = (title: string): void => {
     const hasCurrentTitle = (element: TaskType) => element.title === title;
     const taskIndex: number = tasks.findIndex(hasCurrentTitle);
     const currentTask: TaskType = tasks[taskIndex];
@@ -24,7 +26,7 @@ export const TodoList = (): JSX.Element => {
     forceUpdate();
   };
 
-  const newTask = (newTitle: string, newDescription: string) => {
+  const newTask = (newTitle: string, newDescription: string): void => {
     setTasks([
       {
         title: newTitle,
@@ -39,14 +41,14 @@ export const TodoList = (): JSX.Element => {
     <div className="toto-list" style={{ width: "50%", margin: "auto" }}>
       <h1>My todo list</h1>
       <section>
-        {tasks.map((task) => {
+        {tasks.map((task: TaskType) => {
           return (
             <Todo
               key={task.title}
               titleContent={task.title}
               descriptionContent={task.description}
               isDoneState={task.isDone}
-              action={handleState}
+              action={toggleState}
             />
           );
         })}

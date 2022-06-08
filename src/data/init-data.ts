@@ -1,9 +1,9 @@
-import { TaskType } from "./todo-list";
+import { TaskType } from "../components/todo-list";
 
 export const initData: TaskType[] = [
   {
-    title: "mathematics",
-    description: "",
+    title: "Français",
+    description: "read chapter 4 & 5 and exercices",
     isDone: false,
   },
   {

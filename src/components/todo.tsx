@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface TodoType {
   titleContent: string;
@@ -22,7 +23,19 @@ export const Todo: React.FC<TodoType> = ({
       className="todo-list__element"
       style={{ display: "flex", justifyContent: "space-between" }}
     >
-      <h3 style={{ width: "250px" }}>{titleContent}</h3>
+      <Link
+        to={"task/" + titleContent.split(" ").join("-").toLowerCase()}
+        target="_blank"
+        rel="noreferrer"
+        state={{
+          title: titleContent,
+          description: descriptionContent,
+          isDone: isDoneState,
+        }}
+        style={{ width: "250px" }}
+      >
+        {titleContent}
+      </Link>
       <input
         onChange={(e) => {
           e.preventDefault;
