@@ -1,7 +1,8 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { sortTodos } from "../service/sort";
-import { initData } from "../data/init-data";
-import { Todo } from "./todo";
+import { sortTodos } from "../../service/sort";
+import { Todo } from "../todo/todo";
+import "./todo-list.css";
+import axios from "axios";
 
 export interface TaskType {
   title: string;
@@ -9,32 +10,46 @@ export interface TaskType {
   isDone: boolean;
 }
 
-export const TodoList = (): JSX.Element => {
-  const [tasks, setTasks] = useState<TaskType[]>(initData);
+export const TodoList: React.FC<{ todos: TaskType[] }> = ({
+  todos,
+}): JSX.Element => {
+  const [tasks, setTasks] = useState<TaskType[]>(todos);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [NewTaskDescription, setNewTaskDescription] = useState("");
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
-
-  console.log(tasks);
 
   const toggleState = (title: string): void => {
     const hasCurrentTitle = (element: TaskType) => element.title === title;
     const taskIndex: number = tasks.findIndex(hasCurrentTitle);
     const currentTask: TaskType = tasks[taskIndex];
     currentTask.isDone = !currentTask.isDone;
-    setTasks(sortTodos(tasks, currentTask));
+    axios
+      .post(`api/postTodos`, JSON.stringify(sortTodos(tasks, currentTask)))
+      .then((res) => setTasks(res.data));
     forceUpdate();
   };
 
   const newTask = (newTitle: string, newDescription: string): void => {
-    setTasks([
-      {
-        title: newTitle,
-        description: newDescription,
-        isDone: false,
-      },
-      ...tasks,
-    ]);
+    axios
+      .post(
+        `api/postTodos`,
+        JSON.stringify([
+          {
+            title: newTitle,
+            description: newDescription,
+            isDone: false,
+          },
+          ...tasks,
+        ])
+      )
+      .then((res) => setTasks(res.data));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement> | any) => {
+    e.preventDefault();
+    newTask(newTaskTitle, NewTaskDescription);
+    e.target.reset();
+    blur();
   };
 
   return (
@@ -53,28 +68,22 @@ export const TodoList = (): JSX.Element => {
           );
         })}
       </section>
-      <p>Task state : {tasks.length.toString()}</p>
       <section className="add-todo">
-        <h4>New task</h4>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            newTask(newTaskTitle, NewTaskDescription);
-          }}
-        >
+        <h4 className="add-todo-title">New task</h4>
+        <form className="add-todo-form" onSubmit={handleSubmit}>
           Title :
           <input
             type="text"
             required
-            onChange={(e) => {
-              setNewTaskTitle(e.target.value);
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               e.preventDefault;
+              setNewTaskTitle(e.target.value);
             }}
           />
           Description :
           <input
             type="text"
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               e.preventDefault;
               setNewTaskDescription(e.target.value);
             }}

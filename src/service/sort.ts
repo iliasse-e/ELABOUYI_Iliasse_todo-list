@@ -1,4 +1,4 @@
-import { TaskType } from "../components/todo-list";
+import { TaskType } from "../components/todo-list/todo-list";
 
 /**
  * Sorts array of TODOs by isDone state

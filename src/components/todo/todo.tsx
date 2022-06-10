@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import "./todo.css";
 
 interface TodoType {
   titleContent: string;
@@ -14,17 +15,10 @@ export const Todo: React.FC<TodoType> = ({
   isDoneState,
   action,
 }): JSX.Element => {
-  const [title, setTitle] = useState<string>(titleContent);
-  const [isDone, setIsDone] = useState<boolean>(isDoneState);
-  const [description, setDescription] = useState<string>(descriptionContent);
-
   return (
-    <div
-      className="todo-list__element"
-      style={{ display: "flex", justifyContent: "space-between" }}
-    >
+    <div className="todo-list__element">
       <Link
-        to={"task/" + titleContent.split(" ").join("-").toLowerCase()}
+        to={"/" + titleContent.split(" ").join("-").toLowerCase()}
         target="_blank"
         rel="noreferrer"
         state={{
@@ -32,9 +26,8 @@ export const Todo: React.FC<TodoType> = ({
           description: descriptionContent,
           isDone: isDoneState,
         }}
-        style={{ width: "250px" }}
       >
-        {titleContent}
+        <p className="todo-list__element-title">{titleContent}</p>
       </Link>
       <input
         onChange={(e) => {
@@ -42,11 +35,12 @@ export const Todo: React.FC<TodoType> = ({
           action(titleContent);
         }}
         type="checkbox"
+        checked={isDoneState}
         id="task"
         name="task"
-        className="checkbox unchecked"
+        className="checkbox todo-list__element-checkbox"
+        data-testid="checkbox"
       ></input>
-      <p>{isDoneState.toString()}</p>
     </div>
   );
 };
